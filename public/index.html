@@ -139,9 +139,24 @@ document.addEventListener('DOMContentLoaded', () => {
     copyBtn.className = 'action-btn copy-btn';
     copyBtn.textContent = 'Copy';
     copyBtn.onclick = () => {
-      navigator.clipboard.writeText(task.task_description)
-        .then(() => Swal.fire({ icon: 'success', toast: true, title: 'Disalin!', timer: 2000, position: 'top-end', showConfirmButton: false }))
-        .catch(() => Swal.fire({ icon: 'error', title: 'Gagal salin' }));
+      const tempInput = document.createElement('textarea');
+      tempInput.value = task.task_description;
+      tempInput.style.position = 'fixed';
+      tempInput.style.opacity = '0';
+      document.body.appendChild(tempInput);
+      tempInput.focus();
+      tempInput.select();
+      try {
+        const success = document.execCommand('copy');
+        if (success) {
+          Swal.fire({ icon: 'success', toast: true, title: 'Disalin!', timer: 2000, position: 'top-end', showConfirmButton: false });
+        } else {
+          throw new Error("Copy gagal");
+        }
+      } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Gagal salin', text: err.message });
+      }
+      document.body.removeChild(tempInput);
     };
 
     const deleteBtn = document.createElement('button');
